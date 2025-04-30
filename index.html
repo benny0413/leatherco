@@ -1,0 +1,186 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive digital flyer for custom pouches, showcasing premium craftsmanship and a swipeable catalog.">
+  <title>Custom Pouches - Interactive Flyer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+</head>
+<body class="bg-gray-100 font-sans">
+  <!-- Header -->
+  <section class="bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-12 text-center">
+      <h1 class="text-4xl md:text-5xl font-serif text-gray-900">Custom Pouches, Crafted for You</h1>
+      <p class="mt-4 text-lg text-gray-600">Handcrafted tool pouches designed for effortless access and timeless durability.</p>
+    </div>
+  </section>
+
+  <!-- Value Propositions -->
+  <section class="py-12 bg-gray-50">
+    <div class="max-w-5xl mx-auto px-4">
+      <h2 class="text-3xl font-serif text-center text-gray-900">Why Choose Us</h2>
+      <div class="mt-8 space-y-6">
+        <div class="flex items-center">
+          <span class="text-3xl mr-4">🛠️</span>
+          <div>
+            <h3 class="text-lg font-semibold">Custom Pouches Made Easy to Order</h3>
+            <p class="text-gray-600">A simple process to design your perfect pouch.</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-3xl mr-4">📏</span>
+          <div>
+            <h3 class="text-lg font-semibold">Your Most Used Tools Always in Reach</h3>
+            <p class="text-gray-600">Keep essentials accessible with thoughtful designs.</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-3xl mr-4">⚡</span>
+          <div>
+            <h3 class="text-lg font-semibold">Designed to Sheath and Unsheath Easily</h3>
+            <p class="text-gray-600">Quick-draw functionality for efficiency.</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-3xl mr-4">🌟</span>
+          <div>
+            <h3 class="text-lg font-semibold">Made with Materials That Get Better with Time</h3>
+            <p class="text-gray-600">Premium leather that ages beautifully.</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-3xl mr-4">🔧</span>
+          <div>
+            <h3 class="text-lg font-semibold">Lifetime Warranty with Free Repairs</h3>
+            <p class="text-gray-600">Includes an empty return box for hassle-free repairs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Swipeable Catalog -->
+  <section class="py-12 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+      <h2 class="text-3xl font-serif text-center text-gray-900">Explore Our Catalog</h2>
+      <p class="mt-2 text-center text-gray-600">Swipe to browse our handcrafted pouches.</p>
+      <div class="swiper-container mt-8">
+        <div class="swiper-wrapper">
+          <!-- Pouch 1 -->
+          <div class="swiper-slide">
+            <div class="bg-gray-50 rounded-lg shadow-lg p-4 text-center">
+              <img src="pouch1.jpg" alt="The Craftsman's Carry" class="w-full h-48 object-cover rounded-md">
+              <h3 class="mt-4 text-xl font-semibold">The Craftsman's Carry</h3>
+              <p class="mt-2 text-gray-600">Holds pliers, wrench, and screwdriver with quick-draw design.</p>
+            </div>
+          </div>
+          <!-- Pouch 2 -->
+          <div class="swiper-slide">
+            <div class="bg-gray-50 rounded-lg shadow-lg p-4 text-center">
+              <img src="pouch2.jpg" alt="The Tradesman's Essential" class="w-full h-48 object-cover rounded-md">
+              <h3 class="mt-4 text-xl font-semibold">The Tradesman's Essential</h3>
+              <p class="mt-2 text-gray-600">Fits hammer, tape measure, and utility knife with durable leather.</p>
+            </div>
+          </div>
+          <!-- Pouch 3 -->
+          <div class="swiper-slide">
+            <div class="bg-gray-50 rounded-lg shadow-lg p-4 text-center">
+              <img src="pouch3.jpg" alt="The Artisan's Hold" class="w-full h-48 object-cover rounded-md">
+              <h3 class="mt-4 text-xl font-semibold">The Artisan's Hold</h3>
+              <p class="mt-2 text-gray-600">Designed for chisel, pliers, and small screwdriver with sleek access.</p>
+            </div>
+          </div>
+          <!-- Pouch 4 -->
+          <div class="swiper-slide">
+            <div class="bg-gray-50 rounded-lg shadow-lg p-4 text-center">
+              <img src="pouch4.jpg" alt="The Worker's Companion" class="w-full h-48 object-cover rounded-md">
+              <h3 class="mt-4 text-xl font-semibold">The Worker's Companion</h3>
+              <p class="mt-2 text-gray-600">Holds wrench, multi-tool, and pen with reinforced stitching.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Navigation Buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call-to-Action -->
+  <section class="py-12 bg-gray-50">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-3xl font-serif text-gray-900">Ready to Order?</h2>
+      <p class="mt-4 text-gray-600">Email us at <a href="mailto:support@custompouches.com" class="underline">support@custompouches.com</a> to join our waitlist. Due to high demand, orders are processed in the order received. We’ll confirm your interest within a few days.</p>
+      <a href="mailto:support@custompouches.com" class="mt-6 inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition">Contact Us</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <p>Contact: <a href="mailto:support@custompouches.com" class="underline">support@custompouches.com</a></p>
+      <p class="mt-2">Guarantees: 100% Money-Back Guarantee | Free Shipping on All US Orders</p>
+      <p class="mt-2 text-sm">Crafted to Last, Designed for You</p>
+    </div>
+  </footer>
+
+  <!-- Swiper JS -->
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper('.swiper-container', {
+      slidesPerView: 1,
+      spaceBetween: 10,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      breakpoints: {
+        640: { slidesPerView: 2 },
+        768: { slidesPerView: 3 },
+        1024: { slidesPerView: 4 },
+      },
+    });
+  </script>
+</body>
+</html>
